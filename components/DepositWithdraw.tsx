@@ -5,24 +5,50 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env
 
 export default function DepositWithdraw() {
 
-  
+  const redInfoText = (str: string) => {
+    document.getElementById("info_text")!.className = "text-red-500";
+    document.getElementById("info_text")!.textContent = str;
+  }
+  const greenInfoText = (str: string) => {
+    document.getElementById("info_text")!.className = "text-green-500";
+    document.getElementById("info_text")!.textContent = str;
+  }
+
   const deposit = async () => {
     const title = (document.getElementById("title_input") as HTMLInputElement).value;
     const descr = (document.getElementById("description_input") as HTMLTextAreaElement).value;
-    const amount = Number((document.getElementById("amount_input") as HTMLInputElement).value);
+    const amountText = (document.getElementById("amount_input") as HTMLInputElement).value;
+    if (amountText === ""){
+      redInfoText("Fill amount");
+      return;
+    }
+    const amount = Number(amountText);
     if (!isNaN(amount)){
-      await supabase.from('transaction').insert({'title': title, 'description': descr, 'amount': amount});
-      console.log("deposit " + amount);
+      if (amount < 0){
+        redInfoText("Negative amount invalid");
+      } else {
+        await supabase.from('transaction').insert({'title': title, 'description': descr, 'amount': amount});
+        greenInfoText("Deposit successful!");
+      }
     }
   };
 
   const withdraw = async () => {
     const title = (document.getElementById("title_input") as HTMLInputElement).value;
     const descr = (document.getElementById("description_input") as HTMLTextAreaElement).value;
-    const amount = Number((document.getElementById("amount_input") as HTMLInputElement).value);
+    const amountText = (document.getElementById("amount_input") as HTMLInputElement).value;
+    if (amountText === ""){
+      redInfoText("Fill amount");
+      return;
+    }
+    const amount = Number(amountText);
     if (!isNaN(amount)){
-      await supabase.from('transaction').insert({title: title, description: descr, amount: -amount});
-      console.log("withdraw " + amount);
+      if (amount < 0){
+        redInfoText("Negative amount invalid");
+      } else {
+        await supabase.from('transaction').insert({title: title, description: descr, amount: -amount});
+        greenInfoText("Withdraw successful!");
+      }
     }
   }
   
@@ -33,6 +59,7 @@ export default function DepositWithdraw() {
         <input type="text" placeholder="Title" className="text-black w-full" id="title_input"/>
         <textarea placeholder="Description" rows={10} className="text-black w-full" id="description_input"></textarea>
         <input type="text" placeholder="Amount in &euro;" className="text-black" id="amount_input"></input>
+        <p id="info_text" className="text-green-500">&nbsp;</p>
       </div>
    
       <div className="flex flex-row justify-center mt-5 text-xl">
