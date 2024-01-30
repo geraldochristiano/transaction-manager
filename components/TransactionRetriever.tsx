@@ -5,15 +5,13 @@ import { useEffect, useState } from "react";
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
-export const fetchCache = 'no-store';
-
-export default function TransactionRetriever(){
+export default function TransactionLogRetriever(){
   const [transactionLog, setTransactionLog] = useState<any[]>([]);
   const [balance, setBalance] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
   const [refreshToggle, setRefreshToggle] = useState(false);
 
-  async function deleteLog(id: number){
+  async function deleteEntry(id: number){
     const {status} = await supabase.from('transaction').delete().eq('id', id);
     if (status == 204 || status === 200){
       setRefreshToggle(!refreshToggle);
@@ -48,7 +46,7 @@ export default function TransactionRetriever(){
         <table className="border-separate border-spacing-2 table-fixed w-11/12 text-center">
           <thead>
             <tr>
-              <th>Date and Time</th>
+              <th>Created At</th>
               <th>Title</th>
               <th>Amount</th>
               <th>Type</th>
@@ -59,7 +57,7 @@ export default function TransactionRetriever(){
           <tbody>
             {transactionLog.map((entry) => (
               <TransactionLogRow key={entry.id} id={entry.id} created_at={entry.created_at} title={entry.title} 
-              description={entry.description} amount={entry.amount} deleteHandler={deleteLog}/>
+              description={entry.description} amount={entry.amount} deleteHandler={deleteEntry}/>
             ))}
           </tbody>
         </table>

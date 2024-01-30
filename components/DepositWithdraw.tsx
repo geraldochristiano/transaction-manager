@@ -27,7 +27,7 @@ export default function DepositWithdraw() {
       if (amount < 0){
         redInfoText("Negative amount invalid");
       } else {
-        await supabase.from('transaction').insert({'title': title, 'description': descr, 'amount': amount});
+        await supabase.from('transaction').insert({title: title, description: descr, amount: amount});
         greenInfoText("Deposit successful!");
       }
     }
